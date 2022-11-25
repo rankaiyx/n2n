@@ -17,11 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         sdk_url:
-          - https://downloads.openwrt.org/releases/21.02.2/targets/x86/64/openwrt-sdk-21.02.2-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-          - https://downloads.openwrt.org/releases/21.02.2/targets/x86/generic/openwrt-sdk-21.02.2-x86-generic_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-          - https://downloads.openwrt.org/releases/21.02.2/targets/rockchip/armv8/openwrt-sdk-21.02.2-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-          - https://downloads.openwrt.org/releases/21.02.2/targets/mediatek/mt7622/openwrt-sdk-21.02.2-mediatek-mt7622_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-
+          - https://archive.openwrt.org/barrier_breaker/14.07/ramips/mt7620n/OpenWrt-SDK-ramips-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2.tar.bz2
     steps:
     - name: Checkout
       uses: actions/checkout@main
@@ -39,17 +35,17 @@ jobs:
     - name: Download SDK
       run: |
         url=${{ matrix.sdk_url }}
-        sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
+        sdk=$(basename $url | awk -F '.tar.bz2' '{ print $1 }')
 
         wget $url
-        tar xvf $sdk.tar.xz
+        tar xjf $sdk.tar.bz2
 
     - name: Patch file
       run: |
         git clone --depth 1 https://github.com/ntop/n2n -b 3.0 /tmp/n2n
 
         url=${{ matrix.sdk_url }}
-        sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
+        sdk=$(basename $url | awk -F '.tar.bz2' '{ print $1 }')
 
         cd $sdk/package
         cp -r /tmp/n2n/packages/openwrt .
@@ -66,7 +62,7 @@ jobs:
     - name: Compile
       run: |
         url=${{ matrix.sdk_url }}
-        sdk=$(basename $url | awk -F '.tar.xz' '{ print $1 }')
+        sdk=$(basename $url | awk -F '.tar.bz2' '{ print $1 }')
 
         cd $sdk
 
